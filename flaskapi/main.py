@@ -14,7 +14,8 @@ nltk.downloader.download('vader_lexicon')
 def hello():
   return "Hello World!"
 
-
+# end point for lang detection
+# used langdetect library to achive the desired results
 @app.route("/api/language-detection",methods=['POST']) 
 def language_detection():
     data = request.get_json()
@@ -24,6 +25,8 @@ def language_detection():
         body[i]["is_english"] = detect(body[i]["tweet_text"])=="en"
     return jsonify(body)
 
+# end point for sentiment analysis
+# used NLTK for the process.
 @app.route("/api/sentiment-score",methods=['POST']) 
 def sentiment_score():
     data = request.get_json()

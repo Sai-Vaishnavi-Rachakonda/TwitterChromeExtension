@@ -1,11 +1,17 @@
+//global arrays to maintain checked tweets
 detectedTeweets = [];
 englishTweets = [];
+
 // let proxy = "http://127.0.0.1:5000/"
+//url for the  GCP server
 let proxy = "https://twitterextension.wl.r.appspot.com/"
-function appendCustomNode() {
+
+//function to get the tweet text ad process it,
+function processTweets() {
   const cards = document.getElementsByTagName("article");
   let tweets = [];
   //   console.log(cards);
+  //get all the tweets based in the testid and append id to each card
   Array.from(cards).forEach((elem) => {
     elem.id = elem.id ? elem.id : Math.random() * Math.random() * 10000000;
     let post = elem.querySelectorAll("[data-testid=tweetText]");
@@ -13,6 +19,7 @@ function appendCustomNode() {
       tweets.push({ tweet_text: post[0].innerText, id: elem.id });
   });
   //   console.log(tweets);
+  //make the language detection api call to the server
   fetch(proxy+"api/language-detection", {
     method: "POST",
     headers: {
@@ -23,11 +30,14 @@ function appendCustomNode() {
   })
     .then((response) => response.json())
     .then((response) => {
+      // filter results which has is_english as true.
       let engResponses = response.filter((a) => a.is_english);
       // console.log(engResponses,response)
+      // remove unwanted api data
       engResponses.forEach((res) => {
         delete res.is_english;
       });
+      //make the sentiment analysis api call.
       fetch(proxy+"api/sentiment-score", {
         method: "POST",
         headers: {
@@ -40,13 +50,16 @@ function appendCustomNode() {
         .then((response) => addSentiment(response));
     });
 }
-const observer = new MutationObserver(appendCustomNode);
+
+// create a DOM obsever which will trgger process of tweets with any dom changes in subtree or parent childList
+const observer = new MutationObserver(processTweets);
 observer.observe(document.body, {
   attributes: false,
   subtree: true,
   childList: true,
 });
-// console.log("called!@$%%$#@!");
+
+//function to add the sentiment div based on the article id.
 function addSentiment(tweets) {
   tweets.forEach((tweet) => {
     // console.log(tweet)
