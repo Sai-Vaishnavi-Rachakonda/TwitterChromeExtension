@@ -1,0 +1,13 @@
+{
+    "name": "Tweet Sentiments",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "description": "Twitter feed Sentiment analysis",
+    "permissions": ["tabs", "https://www.twitter.com/*"],
+    "content_scripts": [
+        {
+            "js": ["content.js"],
+            "matches": ["https://*.twitter.com/*"]
+        }
+    ]
+  }
